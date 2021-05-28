@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import nc from 'next-connect'
 import capture from '../../../lib/capture'
-import { setHeaders } from '../../../utils'
+import { setHeaders, validate } from '../../../utils'
+import { captureQuerySchema } from './schemas'
 
 const headers = {
   'Cache-Control': 'private',
@@ -9,12 +10,19 @@ const headers = {
   'Content-Disposition': 'inline',
 }
 
-const handler = nc<NextApiRequest, NextApiResponse>().get(async (req, res) => {
-  setHeaders(res, headers)
+const handler = nc<
+  ExtendedNextApiRequest<CaptureQueryOptions>,
+  NextApiResponse
+>()
+  .use(validate(captureQuerySchema, 'query'))
+  .get(async (req, res) => {
+    const { url } = req.query
 
-  const image = await capture({ url: 'https://trugamr.tech' })
+    setHeaders(res, headers)
 
-  res.send(image)
-})
+    const image = await capture({ url })
+
+    res.send(image)
+  })
 
 export default handler
