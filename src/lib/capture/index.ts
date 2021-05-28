@@ -21,8 +21,13 @@ const capture: Capture = async ({
 }) => {
   if (browser === undefined) browser = await getBrowser(browserOptions)
 
-  const page = await browser.newPage()
-  await page.goto(url)
+  const [page] = await browser.pages()
+  try {
+    // Vercel serverless functions have a 10 sec timeout
+    await page.goto(url, { timeout: 6000 })
+  } catch (error) {
+    console.log(`Timed out for ${url}`)
+  }
 
   if (evaluator) await evaluator(page)
 
