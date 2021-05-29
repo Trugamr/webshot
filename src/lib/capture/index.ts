@@ -15,6 +15,7 @@ export const getBrowser: GetBrowser = async options => {
 
 const capture: Capture = async ({
   url,
+  waitFor,
   browser,
   evaluator,
   browserOptions,
@@ -24,7 +25,15 @@ const capture: Capture = async ({
   const [page] = await browser.pages()
   try {
     // Vercel serverless functions have a 10 sec timeout
-    await page.goto(url, { timeout: 6000 })
+    const promises: Promise<any>[] = []
+
+    // if wait interval before screenshot is specified wait for it
+    // but goto page in parallel, this way both timeout and wait for can be respected
+    if (waitFor) promises.push(page.waitForTimeout(waitFor))
+
+    promises.push(page.goto(url, { timeout: 5000 }))
+
+    await Promise.all(promises)
   } catch (error) {
     console.log(`Timed out for ${url}`)
   }

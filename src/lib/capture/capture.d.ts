@@ -9,17 +9,19 @@ declare type PageEvaluator = (page: Page) => Promise<void>
 
 declare interface CaptureOptions {
   url: string
+  waitFor?: number
   browser?: Browser
   evaluator?: PageEvaluator
+  browserOptions?: GetBrowserOptions
 }
 
-declare type CaptureQueryOptions = Pick<CaptureOptions, 'url'>
+declare type CaptureQueryOptions =
+  import('../../pages/api/capture/schemas').CaptureQuerySchema & {
+    url: string
+    wait_until?: number
+  }
 
-declare type Capture = (
-  options: CaptureOptions & {
-    browserOptions?: GetBrowserOptions
-  },
-) => Promise<Buffer>
+declare type Capture = (options: CaptureOptions) => Promise<Buffer>
 
 declare type GetBrowserOptions = LaunchOptions &
   BrowserLaunchArgumentOptions &

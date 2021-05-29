@@ -16,11 +16,11 @@ const handler = nc<
 >()
   .use(validate(captureQuerySchema, 'query'))
   .get(async (req, res) => {
-    const { url } = req.query
+    const { url, wait_for: waitFor } = req.query
 
     setHeaders(res, headers)
 
-    const image = await capture({ url })
+    const image = await capture({ url, waitFor })
 
     res.send(image)
   })
