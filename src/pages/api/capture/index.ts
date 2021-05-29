@@ -16,13 +16,19 @@ const handler = nc<
 >()
   .use(validate(captureQuerySchema, 'query'))
   .get(async (req, res) => {
-    const { url, wait_for: waitFor } = req.query
+    const { url, wait_for: waitFor, selector } = req.query
 
     setHeaders(res, headers)
 
-    const image = await capture({ url, waitFor })
-
-    res.send(image)
+    try {
+      const image = await capture({ url, waitFor, selector })
+      res.send(image)
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      })
+    }
   })
 
 export default handler
