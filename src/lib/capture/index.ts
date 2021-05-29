@@ -31,10 +31,13 @@ const capture: Capture = async ({
     // if wait interval before screenshot is specified wait for it
     // but goto page in parallel, this way both timeout and wait for can be respected
     if (waitFor) promises.push(page.waitForTimeout(waitFor))
+    // wait for selector to load if specified
+    // if element with selector is not found timeout will throw an error anyway
+    if (selector) promises.push(page.waitForSelector(selector))
     promises.push(page.goto(url, { timeout: 5000 }))
     await Promise.all(promises)
   } catch (error) {
-    console.log(`Timed out for ${url}`)
+    console.log(`Timed out for ${url}`, error.message)
   }
 
   // Run javascript on page
