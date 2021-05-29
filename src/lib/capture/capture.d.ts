@@ -1,9 +1,5 @@
-type Browser = import('puppeteer-core').Browser
-type BrowserLaunchArgumentOptions =
-  import('puppeteer-core').BrowserLaunchArgumentOptions
-type BrowserConnectOptions = import('puppeteer-core').BrowserConnectOptions
-type LaunchOptions = import('puppeteer-core').LaunchOptions
-type Product = import('puppeteer-core').Product
+type Browser = import('playwright-core').Browser
+type LaunchOptions = import('playwright-core').LaunchOptions
 
 declare type PageEvaluator = (page: Page) => Promise<void>
 
@@ -11,20 +7,17 @@ declare interface CaptureOptions {
   url: string
   waitFor?: number
   selector?: string
+  fullPage?: boolean
   browser?: Browser
   evaluator?: PageEvaluator
   browserOptions?: GetBrowserOptions
 }
 
-declare type CaptureQueryOptions =
-  import('../../pages/api/capture/schemas').CaptureQuerySchema & { url: string }
+declare type CaptureQueryOptions = import('./schemas').CaptureQuerySchema & {
+  url: string
+}
 
 declare type Capture = (options: CaptureOptions) => Promise<Buffer>
 
-declare type GetBrowserOptions = LaunchOptions &
-  BrowserLaunchArgumentOptions &
-  BrowserConnectOptions & {
-    product?: Product
-    extraPrefsFirefox?: Record<string, unknown>
-  }
+declare type GetBrowserOptions = LaunchOptions
 declare type GetBrowser = (options?: GetBrowserOptions) => Promise<Browser>

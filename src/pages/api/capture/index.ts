@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import nc from 'next-connect'
 import capture from '../../../lib/capture'
+import { captureQuerySchema } from '../../../lib/capture/schemas'
 import { setHeaders, validate } from '../../../utils'
-import { captureQuerySchema } from './schemas'
 
 const headers = {
   'Cache-Control': 'private',
@@ -16,7 +16,7 @@ const handler = nc<
 >()
   .use(validate(captureQuerySchema, 'query'))
   .get(async (req, res) => {
-    const { url, wait_for: waitFor, selector } = req.query
+    const { url, wait_for: waitFor, selector, full_page: fullPage } = req.query
     let decodedSelector: string | undefined
     if (selector) decodedSelector = decodeURIComponent(selector)
 
@@ -26,6 +26,7 @@ const handler = nc<
       const image = await capture({
         url,
         waitFor,
+        fullPage,
         selector: decodedSelector,
       })
       res.send(image)
